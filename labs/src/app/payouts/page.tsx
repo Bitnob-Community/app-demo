@@ -13,8 +13,8 @@ type ResponseType = {
 };
 
 export default function PayoutsPage() {
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [name, setName] = useState("Joshua Mutekanga");
+  const [phoneNumber, setPhoneNumber] = useState("0704457200");
   const [message, setMessage] = useState("");
 
   const mutation = useMutation({
@@ -45,6 +45,7 @@ export default function PayoutsPage() {
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
+                  defaultValue={name}
                   placeholder="e.g Bruce Wayne"
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -54,6 +55,7 @@ export default function PayoutsPage() {
                 <Input
                   id="phoneNumber"
                   type="number"
+                  defaultValue={phoneNumber}
                   placeholder="e.g 07493852824"
                   onChange={(e) => setPhoneNumber(e.target.value)}
                 />
