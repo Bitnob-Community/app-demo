@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       source: "offchain",
       fromAsset: "usdt",
       toCurrency: "ugx",
-      settlementAmount: 2500000,
+      settlementAmount: 1000000,
     },
     { headers: { Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` } },
   );
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       beneficiary: {
         type: "MOBILEMONEY",
         accountName: incoming.name,
-        network: "MTN",
+        network: "AIRTEL",
         accountNumber: `256${incoming.phoneNumber.substring(1)}`,
       },
     },
