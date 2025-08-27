@@ -14,18 +14,26 @@ type ResponseType = {
 
 export default function PayoutsPage() {
   const [name, setName] = useState("Joshua Mutekanga");
-  const [phoneNumber, setPhoneNumber] = useState("0704457200");
+  const [accountNumber, setAccountNumber] = useState("704457200");
   const [message, setMessage] = useState("");
 
   const mutation = useMutation({
     onSuccess(data) {
       setMessage(data.message);
     },
+    onError(error) {
+      setMessage(`Error: ${error.message}`);
+    },
     mutationFn: async () => {
       const response = await fetch("/api/payouts", {
         method: "POST",
-        body: JSON.stringify({ name, phoneNumber }),
+        body: JSON.stringify({ name, accountNumber }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data: unknown = await response.json();
       return data as ResponseType;
     },
@@ -55,9 +63,9 @@ export default function PayoutsPage() {
                 <Input
                   id="phoneNumber"
                   type="number"
-                  defaultValue={phoneNumber}
+                  defaultValue={accountNumber}
                   placeholder="e.g 07493852824"
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => setAccountNumber(e.target.value)}
                 />
               </div>
             </>
