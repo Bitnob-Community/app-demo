@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { VirtualCard, CardGrid, UserCard, TransactionCard } from "@/components/ui/virtual-card";
 
 export default function VirtualCardsPage() {
   const [action, setAction] = useState("register");
@@ -24,14 +25,19 @@ export default function VirtualCardsPage() {
     idType: "NIN",
     bvn: "22123456789"
   });
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState<any>(null);
+  const [displayMode, setDisplayMode] = useState<"cards" | "users" | "transactions" | "json">("json");
 
   const mutation = useMutation({
     onSuccess(data) {
-      setResult(JSON.stringify(data, null, 2));
+      setResult(data);
+      if (action === "create") {
+        setDisplayMode("cards");
+      }
     },
     onError(error: any) {
-      setResult(`Error: ${error.message}`);
+      setResult({ error: error.message });
+      setDisplayMode("json");
     },
     mutationFn: async () => {
       const response = await fetch("/api/virtual-cards", {
@@ -184,12 +190,84 @@ export default function VirtualCardsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Response</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              Response
+              {result && (
+                <div className="flex gap-1">
+                  <Button
+                    variant={displayMode === "cards" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setDisplayMode("cards")}
+                    disabled={!result?.data?.cards}
+                  >
+                    Cards
+                  </Button>
+                  <Button
+                    variant={displayMode === "users" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setDisplayMode("users")}
+                    disabled={!result?.data?.cardUsers}
+                  >
+                    Users
+                  </Button>
+                  <Button
+                    variant={displayMode === "transactions" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setDisplayMode("transactions")}
+                    disabled={!result?.data?.cardTransactions}
+                  >
+                    Transactions
+                  </Button>
+                  <Button
+                    variant={displayMode === "json" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setDisplayMode("json")}
+                  >
+                    JSON
+                  </Button>
+                </div>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto max-h-96">
-              {result || "No response yet"}
-            </pre>
+            {!result ? (
+              <p className="text-gray-500 text-center py-8">No response yet</p>
+            ) : displayMode === "cards" && result?.data?.cards ? (
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                <CardGrid cards={result.data.cards.slice(0, 6)} className="grid-cols-1 md:grid-cols-2" />
+                {result.data.cards.length > 6 && (
+                  <p className="text-sm text-gray-500 text-center">
+                    Showing first 6 of {result.data.cards.length} cards
+                  </p>
+                )}
+              </div>
+            ) : displayMode === "users" && result?.data?.cardUsers ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {result.data.cardUsers.slice(0, 5).map((user: any) => (
+                  <UserCard key={user.id} user={user} />
+                ))}
+                {result.data.cardUsers.length > 5 && (
+                  <p className="text-sm text-gray-500 text-center">
+                    Showing first 5 of {result.data.cardUsers.length} users
+                  </p>
+                )}
+              </div>
+            ) : displayMode === "transactions" && result?.data?.cardTransactions ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {result.data.cardTransactions.slice(0, 5).map((transaction: any) => (
+                  <TransactionCard key={transaction.id} transaction={transaction} />
+                ))}
+                {result.data.cardTransactions.length > 5 && (
+                  <p className="text-sm text-gray-500 text-center">
+                    Showing first 5 of {result.data.cardTransactions.length} transactions
+                  </p>
+                )}
+              </div>
+            ) : (
+              <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto max-h-96">
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -204,7 +282,10 @@ export default function VirtualCardsPage() {
             onClick={() => {
               fetch("/api/virtual-cards?action=cards")
                 .then(r => r.json())
-                .then(data => setResult(JSON.stringify(data, null, 2)));
+                .then(data => {
+                  setResult(data);
+                  setDisplayMode("cards");
+                });
             }}
           >
             Get All Cards
@@ -214,7 +295,10 @@ export default function VirtualCardsPage() {
             onClick={() => {
               fetch("/api/virtual-cards?action=users")
                 .then(r => r.json())
-                .then(data => setResult(JSON.stringify(data, null, 2)));
+                .then(data => {
+                  setResult(data);
+                  setDisplayMode("users");
+                });
             }}
           >
             Get All Users
@@ -224,7 +308,10 @@ export default function VirtualCardsPage() {
             onClick={() => {
               fetch("/api/virtual-cards?action=transactions")
                 .then(r => r.json())
-                .then(data => setResult(JSON.stringify(data, null, 2)));
+                .then(data => {
+                  setResult(data);
+                  setDisplayMode("transactions");
+                });
             }}
           >
             Get Transactions

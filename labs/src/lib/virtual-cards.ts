@@ -55,7 +55,7 @@ export async function getCardTransactions(cardId: string) {
 }
 
 export async function getAllTransactions() {
-  const response = await axios.get(`${BASE_URL}/cards/transactions`, { headers: headers() });
+  const response = await axios.get(`${BASE_URL}/transactions`, { headers: headers() });
   return response.data;
 }
 
