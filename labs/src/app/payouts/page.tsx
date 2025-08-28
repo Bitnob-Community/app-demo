@@ -25,7 +25,7 @@ export default function PayoutsPage() {
       setMessage(`Error: ${error.message}`);
     },
     mutationFn: async () => {
-      const response = await fetch("/api/payouts", {
+      const response = await fetch("/api/v1/payouts", {
         method: "POST",
         body: JSON.stringify({ name, accountNumber }),
       });
@@ -53,18 +53,16 @@ export default function PayoutsPage() {
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
-                  defaultValue={name}
-                  placeholder="e.g Bruce Wayne"
+                  placeholder={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div className="grid w-full items-center gap-3">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Label htmlFor="accountNumber">Account Number</Label>
                 <Input
-                  id="phoneNumber"
+                  id="accountNumber"
                   type="number"
-                  defaultValue={accountNumber}
-                  placeholder="e.g 07493852824"
+                  placeholder={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                 />
               </div>

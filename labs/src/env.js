@@ -12,7 +12,7 @@ export const env = createEnv({
       .default("development"),
 
     DATABASE_URL: z.string().url(),
-
+    API_URL: z.string().url(),
     BITNOB_CLIENT_ID: z.string(),
     BITNOB_SECRET_KEY: z.string(),
   },
@@ -35,6 +35,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     BITNOB_CLIENT_ID: process.env.BITNOB_CLIENT_ID,
     BITNOB_SECRET_KEY: process.env.BITNOB_SECRET_KEY,
+    API_URL: process.env.API_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

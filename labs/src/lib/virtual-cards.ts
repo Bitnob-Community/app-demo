@@ -1,17 +1,17 @@
 import axios from "axios";
 import { env } from "@/env";
 
-const BASE_URL = "https://sandboxapi.bitnob.co/api/v1/virtual-cards";
-const headers = () => ({ Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` });
+const BASE_URL = `${env.API_URL}/virtual-cards`;
+const headers = () => ({ Authorization: `Bearer ${ env.BITNOB_SECRET_KEY }` });
 
 export async function registerCardUser(data: any) {
   try {
-    const response = await axios.post(`${BASE_URL}/registercarduser`, data, { headers: headers() });
-    return response.data;
+    const response = await axios.post(`${ BASE_URL }/registercarduser`, data, { headers: headers() });
+return response.data;
   } catch (error: any) {
-    console.log("Register user error:", error.response?.data || error.message);
-    throw error;
-  }
+  console.log("Register user error:", error.response?.data || error.message);
+  throw error;
+}
 }
 
 export async function updateCardUser(userId: string, data: any) {

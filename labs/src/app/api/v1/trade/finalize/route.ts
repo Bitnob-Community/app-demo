@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     // Call the real Bitnob trade finalize API
     const { data: tradeResult } = await axios.post<FinalizeTradeResponse>(
-      "https://sandboxapi.bitnob.co/api/v1/trade/finalize",
+      `${env.API_URL}/trade/finalize`,
       {
         quoteId: payload.quoteId,
         customerId: payload.customerId,
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       },
       { 
         headers: { 
-          Authorization: `Bearer ${env.BITNOB_SECRET_KEY}`,
+          Authorization: `Bearer ${ env.BITNOB_SECRET_KEY }`,
           "Content-Type": "application/json"
         } 
       },
