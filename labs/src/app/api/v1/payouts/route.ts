@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // 1. Get quote
-    const { data: quote } = await axios.post<QuoteResponse>(
+    const quoteRes = await axios.post(
       `${env.API_URL}/payouts/quotes`,
       {
         source: "offchain",
@@ -36,9 +36,11 @@ export async function POST(req: NextRequest) {
       },
       { headers: { Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` } },
     );
+    const quote = quoteRes.data;
+    console.log("[STEP 1] Quote Generated:", quote);
 
     // 2. Initialize payout
-    await axios.post<InitializeResponse>(
+    const initRes = await axios.post(
       `${env.API_URL}/payouts/initialize`,
       {
         quoteId: quote.data.quoteId,
@@ -55,25 +57,32 @@ export async function POST(req: NextRequest) {
       },
       { headers: { Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` } },
     );
+    const initialize = initRes.data;
+    console.log("[STEP 2] Quote Initialized:", initialize);
 
     // 3. Finalize payout
-    const response = await axios.post(
+    const finalizeRes = await axios.post(
       `${env.API_URL}/payouts/finalize`,
       { quoteId: quote.data.quoteId },
       { headers: { Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` } },
     );
+    const finalize = finalizeRes.data;
+    console.log("[STEP 3] Quote Finalized:", finalize);
 
     return NextResponse.json({
-      message: "Payout pending. Go to webhook site for confirmation",
-      reference: payoutReference,
-      quote: quote.data,
-      finalizeResponse: response.data,
+      message: "Payout process started. Check the webhook site for final confirmation.",
+      reference: payoutReference
     });
 
   } catch (error) {
     const err = error as AxiosError;
-    console.error("❌ Payout process failed:", err.message);
-
+    if(err.status == 400){
+      console.error("Bad JSON request: ", err.message);
+    } else if(err.status == 404) {
+      console.error("Resource not found: ", err.message);
+    } else {
+      console.error("❌ Payout process failed:", err.message);
+    }
     return NextResponse.json({
       error: "Payout failed",
       reference: payoutReference,

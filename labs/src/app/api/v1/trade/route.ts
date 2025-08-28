@@ -3,125 +3,96 @@ import { type NextRequest, NextResponse } from "next/server";
 import axios, { type AxiosError } from "axios";
 import { env } from "@/env";
 
-const WEBHOOK_URL = "https://webhook.site/109c1736-3aac-4599-9c66-38f031aa41fb";
+type TradeInitRequest = {
+  amount: number;
+};
 
-type TradeQuoteResponse = {
+type TradeInitResponse = {
+  status: boolean;
+  message: string;
   data: {
     quoteId: string;
-    rate: string;
-    fees: string;
-    fromAmount: string;
-    toAmount: string;
-    expiresAt: string;
+    quote: any;
   };
 };
 
-type TradePayload = {
-  fromAsset: string;
-  toAsset: string;
-  amount: string;
-  amountType?: "fromAmount" | "toAmount";
-  customerId: string;
+type TradeFinalizeRequest = {
+  quoteId: string;
+  amount?: number;
+  reference?: string;
 };
 
-async function sendWebhookNotification(
-  event: string,
-  data: any,
-  reference?: string
-) {
-  try {
-    const webhookPayload = {
-      event,
-      timestamp: new Date().toISOString(),
-      reference,
-      data,
-      source: "bitnob-trade-api"
-    };
-
-    await axios.post(WEBHOOK_URL, webhookPayload, {
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "Bitnob-Trade-Webhook/1.0"
-      },
-      timeout: 5000
-    });
-
-    console.log(`🔔 Webhook sent: ${event}`, { reference, timestamp: new Date().toISOString() });
-  } catch (error) {
-    console.error(`❌ Webhook failed for ${event}:`, error instanceof Error ? error.message : error);
-  }
-}
+type TradeFinalizeResponse = {
+  status: boolean;
+  message: string;
+  data: any;
+};
 
 export async function POST(req: NextRequest) {
-  const payload = (await req.json()) as TradePayload;
-  const tradeReference = crypto.randomUUID();
+  const body = await req.json();
+  let tradeReference = body.reference || crypto.randomUUID();
 
   try {
-    // Send initial webhook notification
-    await sendWebhookNotification("trade.initiated", {
-      fromAsset: payload.fromAsset,
-      toAsset: payload.toAsset,
-      amount: payload.amount,
-      amountType: payload.amountType || "fromAmount",
-      customerId: payload.customerId
-    }, tradeReference);
-
-    // Call the real Bitnob trade API
-    const { data: tradeResponse } = await axios.post<TradeQuoteResponse>(
+    // Step 1: Trade initialization
+    const { data: initResponse } = await axios.post<TradeInitResponse>(
       `${env.API_URL}/trade`,
       {
-        fromAsset: payload.fromAsset,
-        toAsset: payload.toAsset,
-        amount: payload.amount,
-        amountType: payload.amountType || "fromAmount",
-        customerId: payload.customerId,
+        amount: body.amount,
       },
-      { 
-        headers: { 
-          Authorization: `Bearer ${ env.BITNOB_SECRET_KEY }`,
+      {
+        headers: {
+          Authorization: `Bearer ${env.BITNOB_SECRET_KEY}`,
           "Content-Type": "application/json"
-        } 
-      },
+        }
+      }
     );
+    console.log("[TRADE INIT] Response:", initResponse);
 
-    console.log("🚀 Trade initialized:", tradeResponse.data);
+    if (!initResponse.status || !initResponse.data?.quoteId) {
+      throw new Error(initResponse.message || "Trade initialization failed");
+    }
 
-    // Send quote received webhook
-    await sendWebhookNotification("trade.quote_received", {
-      quoteId: tradeResponse.data.quoteId,
-      rate: tradeResponse.data.rate,
-      fromAsset: payload.fromAsset,
-      toAsset: payload.toAsset,
-      fromAmount: tradeResponse.data.fromAmount,
-      toAmount: tradeResponse.data.toAmount,
-      fees: tradeResponse.data.fees,
-      expiresAt: tradeResponse.data.expiresAt
-    }, tradeReference);
+    // Step 2: Trade finalization
+    const { data: finalizeResponse } = await axios.post<TradeFinalizeResponse>(
+      `${env.API_URL}/trade/finalize`,
+      {
+        quoteId: initResponse.data.quoteId,
+        amount: body.amount,
+        reference: tradeReference,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${env.BITNOB_SECRET_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    console.log("[TRADE FINALIZE] Response:", finalizeResponse);
+
+    if (!finalizeResponse.status) {
+      throw new Error(finalizeResponse.message || "Trade finalization failed");
+    }
 
     return NextResponse.json({
-      message: "Trade initialized successfully",
+      message: "Trade status pending. Go to webhook site for confirmation",
       reference: tradeReference,
-      quote: tradeResponse.data,
-      status: "quote_ready"
+      quoteId: initResponse.data.quoteId,
+      trade: finalizeResponse.data
     });
 
   } catch (error) {
     const err = error as AxiosError;
-    console.error("❌ Trade quote failed:", err.message);
-
-    // Send error webhook
-    await sendWebhookNotification("trade.quote_error", {
-      reference: tradeReference,
-      error: err.message,
-      fromAsset: payload.fromAsset,
-      toAsset: payload.toAsset,
-      amount: payload.amount
-    }, tradeReference);
-
+    console.error("❌ Trade process failed:", err.message);
     return NextResponse.json({
-      error: "Trade quote failed",
+      error: "Trade process failed",
       reference: tradeReference,
-      message: err.response?.data?.message || err.message
+      message:
+        err.response &&
+          err.response.data &&
+          typeof err.response.data === "object" &&
+          "message" in err.response.data
+          ? (err.response.data as any).message
+          : err.message
     }, { status: 500 });
   }
 }

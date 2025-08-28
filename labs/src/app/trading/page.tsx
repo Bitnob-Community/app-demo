@@ -23,62 +23,25 @@ interface QuoteData {
 export default function TradingPage() {
   const [step, setStep] = useState<TradeStep>("form");
   const [formData, setFormData] = useState({
-    fromAsset: "BTC",
-    toAsset: "USDT",
-    amount: "0.001",
-    amountType: "fromAmount" as "fromAmount" | "toAmount",
-    customerId: "e22795d9-23f6-48e6-8b30-be5718abd876"
+    amount: "" // placeholder
   });
-  const [quoteData, setQuoteData] = useState<QuoteData | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [tradeResult, setTradeResult] = useState<any>(null);
 
-  const getQuoteMutation = useMutation({
+  const tradeMutation = useMutation({
     onSuccess(data) {
-      setQuoteData({
-        ...data.quote,
-        reference: data.reference
-      });
-      setStep("quote");
+      setTradeResult(data);
+      setStep("result");
     },
     onError(error: any) {
-      setResult({ error: true, message: error.message });
+      setTradeResult({ error: true, message: error.message });
       setStep("result");
     },
     mutationFn: async () => {
       const response = await fetch("/api/v1/trade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP ${response.status}`);
-      }
-
-      return response.json();
-    },
-  });
-
-  const finalizeMutation = useMutation({
-    onSuccess(data) {
-      setResult({ success: true, ...data });
-      setStep("result");
-    },
-    onError(error: any) {
-      setResult({ error: true, message: error.message });
-      setStep("result");
-    },
-    mutationFn: async () => {
-      if (!quoteData) throw new Error("No quote data available");
-      
-      const response = await fetch("/api/v1/trade/finalize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          quoteId: quoteData.quoteId,
-          customerId: formData.customerId,
-          reference: quoteData.reference
+          amount: Number(formData.amount)
         }),
       });
 
@@ -91,33 +54,21 @@ export default function TradingPage() {
     },
   });
 
-  const handleGetQuote = () => {
-    getQuoteMutation.mutate();
-  };
-
-  const handleFinalizeTrade = () => {
-    finalizeMutation.mutate();
+  const handleTrade = () => {
+    tradeMutation.mutate();
   };
 
   const handleStartOver = () => {
     setStep("form");
-    setQuoteData(null);
-    setResult(null);
+    setTradeResult(null);
+    setFormData({
+      amount: ""
+    });
   };
-
-  const swapAssets = () => {
-    setFormData(prev => ({
-      ...prev,
-      fromAsset: prev.toAsset,
-      toAsset: prev.fromAsset
-    }));
-  };
-
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
-        <TrendingUp className="w-8 h-8 text-blue-600" />
-        Trading
+
       </h1>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -126,7 +77,7 @@ export default function TradingPage() {
           {step === "form" && (
             <Card>
               <CardHeader>
-                <CardTitle>Create Trade</CardTitle>
+                <CardTitle>Start Trade</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="bg-blue-50 p-4 rounded-lg mb-4">
@@ -134,193 +85,67 @@ export default function TradingPage() {
                     💡 Bitnob supports BTC ↔ USDT trading pairs only
                   </p>
                 </div>
-                
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <Label htmlFor="fromAsset">From Asset</Label>
-                    <select
-                      id="fromAsset"
-                      value={formData.fromAsset}
-                      onChange={(e) => setFormData({...formData, fromAsset: e.target.value, toAsset: e.target.value === "BTC" ? "USDT" : "BTC"})}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="BTC">Bitcoin (BTC)</option>
-                      <option value="USDT">Tether (USDT)</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="toAsset">To Asset</Label>
-                    <div className="w-full p-2 border rounded bg-gray-50 text-gray-700">
-                      {formData.fromAsset === "BTC" ? "Tether (USDT)" : "Bitcoin (BTC)"}
-                    </div>
-                    <input type="hidden" value={formData.toAsset} />
-                  </div>
-                </div>
-
-                <div className="flex justify-center">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={swapAssets}
-                    className="flex items-center gap-2"
-                  >
-                    <ArrowUpDown className="w-4 h-4" />
-                    Swap
-                  </Button>
-                </div>
-
+                {/* Only amount input needed */}
                 <div>
-                  <Label htmlFor="amount">Amount</Label>
+                  <Label htmlFor="amount">Amount (USD)</Label>
                   <Input
                     id="amount"
                     type="number"
-                    step="0.00000001"
+                    step="1"
                     value={formData.amount}
-                    onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                    placeholder="Enter amount"
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    placeholder="Amount in USD to convert to BTC"
                   />
                 </div>
-
-                <div>
-                  <Label htmlFor="amountType">Amount Type</Label>
-                  <select
-                    id="amountType"
-                    value={formData.amountType}
-                    onChange={(e) => setFormData({...formData, amountType: e.target.value as "fromAmount" | "toAmount"})}
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value="fromAmount">From Amount (You Send)</option>
-                    <option value="toAmount">To Amount (You Receive)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="customerId">Customer ID</Label>
-                  <Input
-                    id="customerId"
-                    value={formData.customerId}
-                    onChange={(e) => setFormData({...formData, customerId: e.target.value})}
-                    placeholder="Customer ID"
-                  />
-                </div>
-
                 <Button
-                  onClick={handleGetQuote}
-                  disabled={getQuoteMutation.isPending}
+                  onClick={handleTrade}
+                  disabled={tradeMutation.isPending}
                   className="w-full"
                 >
-                  {getQuoteMutation.isPending ? "Getting Quote..." : "Get Quote"}
+                  {tradeMutation.isPending ? "Processing Trade..." : "Trade Now"}
                 </Button>
               </CardContent>
             </Card>
           )}
 
-          {step === "quote" && quoteData && (
+          {/* No quote step, trade is processed in one go */}
+
+          {step === "result" && tradeResult && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-orange-500" />
-                  Trade Quote
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 p-6 rounded-lg">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="font-medium text-gray-700">You Send:</span>
-                    <span className="text-xl font-bold text-gray-900">{quoteData.fromAmount} {formData.fromAsset}</span>
-                  </div>
-                  <div className="flex justify-center mb-3">
-                    <ArrowUpDown className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="font-medium text-gray-700">You Receive:</span>
-                    <span className="text-xl font-bold text-green-600">{quoteData.toAmount} {formData.toAsset}</span>
-                  </div>
-                  <div className="border-t border-blue-200 pt-3 mt-3 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">Exchange Rate:</span>
-                      <span className="text-sm text-gray-800 font-mono">{formData.fromAsset === "BTC" ? `1 BTC = ${Number(quoteData.rate).toLocaleString()} USDT` : `1 USDT = ${Number(quoteData.rate).toFixed(8)} BTC`}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">Trading Fees:</span>
-                      <span className="text-sm text-gray-800">{quoteData.fees} {formData.fromAsset}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-sm text-gray-600">
-                  <p>Quote expires: {new Date(quoteData.expiresAt).toLocaleString()}</p>
-                  <p>Reference: {quoteData.reference}</p>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleStartOver} className="flex-1">
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleFinalizeTrade}
-                    disabled={finalizeMutation.isPending}
-                    className="flex-1"
-                  >
-                    {finalizeMutation.isPending ? "Executing..." : "Execute Trade"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {step === "result" && result && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {result.error ? (
+                  {tradeResult.error ? (
                     <XCircle className="w-5 h-5 text-red-500" />
                   ) : (
                     <CheckCircle className="w-5 h-5 text-green-500" />
                   )}
-                  Trade {result.error ? "Failed" : "Completed"}
+                  Trade {tradeResult.error ? "Failed" : "Completed"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {result.error ? (
+                {tradeResult.error ? (
                   <div className="bg-red-50 p-4 rounded-lg">
                     <p className="text-red-700 font-medium">Error:</p>
-                    <p className="text-red-600">{result.message}</p>
+                    <p className="text-red-600">{tradeResult.message}</p>
                   </div>
                 ) : (
                   <div className="bg-green-50 p-4 rounded-lg">
                     <p className="text-green-700 font-medium mb-2">Trade Successful!</p>
-                    {result.trade && (
+                    {tradeResult.trade && (
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span>Trade ID:</span>
-                          <span className="font-mono">{result.trade.tradeId}</span>
+                          <span className="font-mono">{tradeResult.trade.id}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>From:</span>
-                          <span>{result.trade.fromAmount} {result.trade.fromAsset}</span>
+                          <span>Quote ID:</span>
+                          <span className="font-mono">{tradeResult.quoteId}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span>To:</span>
-                          <span>{result.trade.toAmount} {result.trade.toAsset}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Executed Rate:</span>
-                          <span>{result.trade.executedRate}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Fees:</span>
-                          <span>{result.trade.fees}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Executed At:</span>
-                          <span>{new Date(result.trade.executedAt).toLocaleString()}</span>
-                        </div>
+                        {/* You can add more fields from tradeResult.trade as needed */}
                       </div>
                     )}
                     <p className="text-sm text-gray-600 mt-2">
-                      Reference: {result.reference}
+                      Reference: {tradeResult.reference}
                     </p>
                   </div>
                 )}
