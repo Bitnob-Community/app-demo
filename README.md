@@ -4,7 +4,7 @@ A comprehensive demonstration of Bitnob's payment API capabilities, showcasing B
 
 ## 🚀 About This Demo
 
-This demo application demonstrates how to integrate Bitnob's payment infrastructure into your applications. It showcases real-world implementations of cryptocurrency payments, virtual card issuing, and cross-border financial services.
+This demo application shows how to integrate Bitnob's payment infrastructure into your applications. It features real-world implementations of cryptocurrency payments, virtual card issuing, and cross-border financial services for developers building fintech solutions.
 
 ## 🎯 API Features Demonstrated
 
@@ -32,18 +32,99 @@ This demo includes complete implementations of:
 ## 🛠️ Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- Bitnob sandbox account
-- API credentials
+- **Node.js 18+** - [Download](https://nodejs.org/)
+- **Git** - [Download](https://git-scm.com/downloads) 
+- **Code Editor** - VS Code recommended ([Download](https://code.visualstudio.com/))
+- **Postman** (optional) - [Download](https://www.postman.com/downloads/)
 
-### Installation
+### 1. Account Setup
+
+1. **Create a Bitnob Sandbox Account**
+   - Go to [https://sandboxapp.bitnob.co/accounts/signup](https://sandboxapp.bitnob.co/accounts/signup)
+   - Complete registration and email verification
+   - Enable 2FA (recommended)
+
+2. **Get API Credentials**
+   - Login to your sandbox account
+   - Navigate to Settings → API Keys
+   - Generate and save your API credentials:
+     - Client ID
+     - Secret Key
+
+### 2. Installation
+
 ```bash
 git clone <repository-url>
-cd app-demo
+cd app-demo/labs
 npm install
 cp .env.example .env
-# Add your API credentials to .env
+```
+
+### 3. Environment Configuration
+
+Edit your `.env` file with your API credentials:
+
+```bash
+# Database (for demo data storage)
+DATABASE_URL="postgresql://postgres:password@localhost:5432/bitnob_demo"
+
+# Bitnob API Configuration
+API_URL="https://sandboxapi.bitnob.co/api/v1"
+BITNOB_CLIENT_ID="your_client_id_here"
+BITNOB_SECRET_KEY="your_secret_key_here"
+```
+
+### 4. Start the Application
+
+```bash
 npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) to access the demo.
+
+### 5. Test Your Setup
+
+You can test your API connection using the test script:
+
+```javascript
+// test-api.js
+const crypto = require('crypto');
+const axios = require('axios');
+
+function generateSignature(method, path, timestamp, nonce, body = '') {
+  const message = `${method}${path}${timestamp}${nonce}${body}`;
+  return crypto
+    .createHmac('sha256', process.env.BITNOB_SECRET_KEY)
+    .update(message)
+    .digest('hex');
+}
+
+async function testConnection() {
+  const timestamp = Date.now().toString();
+  const nonce = crypto.randomBytes(16).toString('hex');
+  const method = 'GET';
+  const path = '/api/v1/me';
+  
+  const signature = generateSignature(method, path, timestamp, nonce);
+  
+  try {
+    const response = await axios.get(`${process.env.API_URL}/me`, {
+      headers: {
+        'x-auth-client': process.env.BITNOB_CLIENT_ID,
+        'x-auth-timestamp': timestamp,
+        'x-auth-nonce': nonce,
+        'x-auth-signature': signature,
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log('✅ Setup successful!');
+    console.log('Account:', response.data.data.email);
+  } catch (error) {
+    console.error('❌ Setup failed:', error.response?.data || error.message);
+  }
+}
+
+testConnection();
 ```
 
 ## 📚 API Resources
@@ -60,7 +141,7 @@ npm run dev
 
 ## 🏗️ Architecture
 
-This demo showcases:
+This demo includes:
 - RESTful API integrations
 - Webhook handling for real-time updates
 - Secure payment processing
@@ -73,6 +154,6 @@ This demo is open source and available under the MIT License. Feel free to use, 
 
 ---
 
-**Ready to integrate Bitnob's payment infrastructure?** Explore this demo and start building your financial application today.
+**Ready to integrate Bitnob's payment infrastructure?** Run this demo locally and start building your financial application today.
 
 [View API Docs →](https://www.bitnob.dev/docs/genesis/overview)
