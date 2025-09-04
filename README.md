@@ -1,125 +1,78 @@
-# Bitnob API Workshops
+# Bitnob API Demo
 
-Welcome to the Bitnob API Workshops - empowering developers across Africa to build great products.
+A comprehensive demonstration of Bitnob's payment API capabilities, showcasing Bitcoin, stablecoins, and financial infrastructure integration.
 
-## 🌍 About Our Workshops
+## 🚀 About This Demo
 
-We conduct hands-on technical workshops both online and in-person across Africa, teaching developers how to integrate Bitcoin, stablecoins, and modern financial infrastructure into their applications. Our workshops combine theoretical knowledge with practical implementation, preparing developers to build real-world solutions.
+This demo application demonstrates how to integrate Bitnob's payment infrastructure into your applications. It showcases real-world implementations of cryptocurrency payments, virtual card issuing, and cross-border financial services.
 
-## 🎯 What We Teach
+## 🎯 API Features Demonstrated
 
-### Core Technologies
+### Core Payment Technologies
 - **Bitcoin & Lightning Network** - Instant, low-fee payments at scale
 - **USDT/Stablecoins** - Digital dollars for stable value transfers
 - **Cross-border Payments** - Seamless money movement across Africa
 - **Virtual Card Issuing** - Programmatic card creation and management
 
-### Key Concepts
-- **Financial Privacy** - Best practices for secure financial applications
-- **API Integration** - Building robust services on Bitnob infrastructure
-- **Real-world Use Cases** - Remittances, payroll, e-commerce, and more
-- **Production Readiness** - Security, error handling, and scalability
+### Implementation Examples
+- **Payment Processing** - Accept and process crypto payments
+- **Currency Conversion** - Convert between crypto and local currencies
+- **Disbursement Systems** - Send payments to bank accounts and mobile money
+- **Card Management** - Issue, fund, and manage virtual cards
 
-## 📚 Workshop Format
+## 💻 Demo Features
 
-### Duration: 5 Hours (10am - 3pm)
-
-**Morning Session**
-- Environment setup and API overview
-- Lab 1: Building USDT to local currency flows
-- Hands-on implementation with real-time support
-
-**Afternoon Session**
-- Lab 2: Virtual card issuing and management
-- Lab 3: AI integration with payment APIs
-- Open floor for custom implementations
-
-## 🛠️ Prerequisites
-
-Before attending, please complete our [Workshop Setup Guide](./workshop-setup-guide.md) to ensure you're ready to code from minute one.
-
-## 🗓️ Workshop Schedule
-
-We're bringing these workshops to developers across Africa. Check our [workshop calendar](./calendar.md) for upcoming sessions in your city.
-
-### Past Locations
-- Lagos, Nigeria
-- Abuja, Nigeria
-- Nairobi, Kenya
-- Accra, Ghana
-
-### Upcoming Workshops
-Join our [Telegram group](https://t.me/+QZEsH1DBhC04YjE0) for announcements about workshops in your area.
-
-## 💻 What You'll Build
-
-By the end of our workshop, you'll have implemented:
+This demo includes complete implementations of:
 
 1. **Payment Gateway** - Accept crypto payments and convert to local currency
 2. **Disbursement System** - Send payments to mobile money and bank accounts
 3. **Card Program** - Issue virtual cards funded by cryptocurrency
-4. **AI Assistant** - Natural language interface for payment operations
+4. **Trading System** - Buy/sell cryptocurrency with automatic conversions
 
-## 🚀 Post-Workshop
+## 🛠️ Getting Started
 
-### Continue Building
-- Access to sandbox environment
-- Developer community support
-- Regular office hours
-- Hackathon opportunities
+### Prerequisites
+- Node.js 18+ 
+- Bitnob sandbox account
+- API credentials
 
-### Resources
+### Installation
+```bash
+git clone <repository-url>
+cd app-demo
+npm install
+cp .env.example .env
+# Add your API credentials to .env
+npm run dev
+```
+
+## 📚 API Resources
+
+### Documentation
 - [API Documentation](https://www.bitnob.dev/docs/genesis/overview)
 - [API Reference](https://www.bitnob.dev/api-reference/authentication)
 - [Developer Dashboard](https://sandboxapp.bitnob.co)
 
-## 🤝 Community
-
-### Get Support
-- **Telegram**: [Join our developer community](https://t.me/+QZEsH1DBhC04YjE0)
+### Support
 - **GitHub**: Open issues in this repository
 - **Email**: developers@bitnob.com
+- **Telegram**: [Join our developer community](https://t.me/+QZEsH1DBhC04YjE0)
 
-### Contribute
-We welcome contributions to our workshop materials:
-- Submit examples and use cases
-- Share your implementations
-- Suggest improvements
-- Report issues
+## 🏗️ Architecture
 
-## 🎓 For Instructors
-
-If you're interested in hosting a Bitnob workshop in your community:
-1. Review our instructor guidelines
-2. Complete the instructor training program
-3. Access workshop presentation materials
-4. Get support for your first workshop
-
-Contact developers@withbitnob.com to learn more.
-
-## 📋 Workshop Preparation Checklist
-
-- [ ] Complete [setup guide](./workshop-setup-guide.md)
-- [ ] Join [Telegram group](https://t.me/+QZEsH1DBhC04YjE0)
-- [ ] Create sandbox account
-- [ ] Test API connection
-- [ ] Install required tools
-- [ ] Prepare questions about your use case
-
-## 🌟 Success Stories
-
-Developers who've attended our workshops have gone on to:
-- Launch remittance services processing millions in volume
-- Build payroll systems for remote African teams
-- Create e-commerce platforms with crypto payments
-- Win hackathons and secure funding
+This demo showcases:
+- RESTful API integrations
+- Webhook handling for real-time updates
+- Secure payment processing
+- Error handling and retry logic
+- Production-ready code patterns
 
 ## 📄 License
 
-Workshop materials are open source and available under the MIT License. Feel free to use, modify, and share.
+This demo is open source and available under the MIT License. Feel free to use, modify, and share.
 
 ---
 
-**Ready to build the future of finance in Africa?** Join us at our next workshop and turn your ideas into reality.
+**Ready to integrate Bitnob's payment infrastructure?** Explore this demo and start building your financial application today.
 
-[Get Started →](./workshop-setup-guide.md)
+[View API Docs →](https://www.bitnob.dev/docs/genesis/overview)
