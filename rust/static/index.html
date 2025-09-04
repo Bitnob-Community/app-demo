@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitnob API Demo - Rust</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #555;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bitnob API Demo - Rust Implementation</h1>
+        
+        <!-- Payout Section -->
+        <div class="section">
+            <h2>💸 Payout Test</h2>
+            <form id="payoutForm">
+                <div class="form-group">
+                    <label for="name">Beneficiary Name:</label>
+                    <input type="text" id="name" name="name" value="Joshua Mutekanga" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountNumber">Account Number:</label>
+                    <input type="text" id="accountNumber" name="accountNumber" value="704457200" required>
+                </div>
+                <button type="submit" id="payoutBtn">Send Payout (NGN 2000)</button>
+                <div id="payoutResult" class="result" style="display: none;"></div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // Payout Form Handler
+        document.getElementById('payoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('payoutBtn');
+            const result = document.getElementById('payoutResult');
+            
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            result.style.display = 'block';
+            result.className = 'result loading';
+            result.textContent = 'Processing payout request...';
+            
+            try {
+                const formData = new FormData(e.target);
+                const data = {
+                    name: formData.get('name'),
+                    accountNumber: formData.get('accountNumber')
+                };
+                
+                const response = await fetch('/api/v1/payouts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const resultData = await response.json();
+                
+                if (response.ok) {
+                    result.className = 'result success';
+                    result.textContent = `Success!\nMessage: ${resultData.message}\nReference: ${resultData.reference || 'N/A'}`;
+                } else {
+                    result.className = 'result error';
+                    result.textContent = `Error: ${resultData.message || 'Unknown error occurred'}`;
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `Network Error: ${error.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send Payout (NGN 2000)';
+            }
+        });
+
+    </script>
+</body>
+</html>
