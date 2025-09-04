@@ -3,96 +3,59 @@ import { type NextRequest, NextResponse } from "next/server";
 import axios, { type AxiosError } from "axios";
 import { env } from "@/env";
 
-type TradeInitRequest = {
-  amount: number;
-};
 
-type TradeInitResponse = {
-  status: boolean;
-  message: string;
+type QuoteResponse = {
   data: {
     quoteId: string;
-    quote: any;
   };
 };
 
-type TradeFinalizeRequest = {
-  quoteId: string;
-  amount?: number;
-  reference?: string;
+type InitializeResponse = {
+  data: {
+    quoteId: string;
+  };
 };
 
-type TradeFinalizeResponse = {
-  status: boolean;
-  message: string;
-  data: any;
+
+type IncomingPayload = {
+    amount: string;
 };
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  let tradeReference = body.reference || crypto.randomUUID();
+  const incoming = (await req.json()) as IncomingPayload;
+  const { data: quote } = await axios.post<QuoteResponse>(
+    "https://api.bitnob.co/api/v1/wallets/initialize-swap-for-bitcoin",
+    {
+        amount: 200,
+
+    },
+
+    { headers: { Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` } },
+  );
+
+  await axios.post<InitializeResponse>(
+    "https://api.bitnob.co/api/v1/wallets/finalize-swap-for-bitcoin",
+    {
+      quoteId: quote.data.quoteId,
+      reference: crypto.randomUUID(),
+    },
+    { headers: { Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` } },
+  );
 
   try {
-    // Step 1: Trade initialization
-    const { data: initResponse } = await axios.post<TradeInitResponse>(
-      `${env.API_URL}/trade`,
-      {
-        amount: body.amount,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${env.BITNOB_SECRET_KEY}`,
-          "Content-Type": "application/json"
-        }
-      }
+    const response = await axios.post(
+      "https://api.bitnob.co/api/v1/wallets/finalize-swap-for-bitcoin",
+      { quoteId: quote.data.quoteId },
+      { headers: { Authorization: `Bearer ${env.BITNOB_SECRET_KEY}` } },
     );
-    console.log("[TRADE INIT] Response:", initResponse);
 
-    if (!initResponse.status || !initResponse.data?.quoteId) {
-      throw new Error(initResponse.message || "Trade initialization failed");
-    }
-
-    // Step 2: Trade finalization
-    const { data: finalizeResponse } = await axios.post<TradeFinalizeResponse>(
-      `${env.API_URL}/trade/finalize`,
-      {
-        quoteId: initResponse.data.quoteId,
-        amount: body.amount,
-        reference: tradeReference,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${env.BITNOB_SECRET_KEY}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
-    console.log("[TRADE FINALIZE] Response:", finalizeResponse);
-
-    if (!finalizeResponse.status) {
-      throw new Error(finalizeResponse.message || "Trade finalization failed");
-    }
-
-    return NextResponse.json({
-      message: "Trade status pending. Go to webhook site for confirmation",
-      reference: tradeReference,
-      quoteId: initResponse.data.quoteId,
-      trade: finalizeResponse.data
-    });
-
+    console.log("🚀 ~ POST ~ response:", response.data);
   } catch (error) {
     const err = error as AxiosError;
-    console.error("❌ Trade process failed:", err.message);
-    return NextResponse.json({
-      error: "Trade process failed",
-      reference: tradeReference,
-      message:
-        err.response &&
-          err.response.data &&
-          typeof err.response.data === "object" &&
-          "message" in err.response.data
-          ? (err.response.data as any).message
-          : err.message
-    }, { status: 500 });
+    console.log("🚀 ~ POST ~ err.message:", err.toJSON());
   }
+
+  return NextResponse.json({
+    message: "Swap completed successfully",
+  });
 }
