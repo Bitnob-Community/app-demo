@@ -112,19 +112,6 @@ cargo test
 | `API_URL` | Bitnob API base URL | `https://sandboxapi.bitnob.co` |
 | `BITNOB_SECRET_KEY` | Your Bitnob secret key | `sk_sandbox_...` |
 
-## 🔍 Logging
-
-The application uses structured logging with `tracing`. Set the log level:
-
-```bash
-RUST_LOG=info cargo run
-```
-
-## 🤝 Contributing
-
-1. Follow Rust conventions and use `rustfmt`
-2. Run `cargo clippy` before committing
-3. Add tests for new functionality
 
 ## 📄 License
 
