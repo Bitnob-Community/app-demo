@@ -21,16 +21,16 @@ pub struct AppState {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init();
-    
+
     let config = Arc::new(Config::from_env()?);
-    
+
     let http_client = reqwest::Client::new();
-    
+
     let state = AppState {
         config,
         http_client,
     };
-    
+
     let app = Router::new()
         .route("/api/v1/payouts", post(handlers::payouts::create_payout))
         .route("/api/v1/trade", post(handlers::trading::create_trade))
@@ -39,14 +39,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(CorsLayer::permissive())
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3001")
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3005")
         .await?;
-        
-    info!("Server running on http://localhost:3001");
-    
+
+    info!("Server running on http://localhost:3005");
+
     axum::serve(listener, app)
         .await?;
-    
+
     Ok(())
 }
 
