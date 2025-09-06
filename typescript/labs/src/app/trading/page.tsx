@@ -21,7 +21,7 @@ export default function SwapPage() {
       setMessage(data.message);
     },
     mutationFn: async () => {
-      const response = await fetch("/api/swap", {
+      const response = await fetch("/api/v1/trade", {
         method: "POST",
         body: JSON.stringify({ amount }),
       });
