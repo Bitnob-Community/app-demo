@@ -40,10 +40,17 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
+	router.GET("/trading", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "trading.html", nil)
+	})
+
 	// API routes
 	api := router.Group("/api/v1")
 	{
 		api.POST("/payouts", createPayout)
+		api.POST("/trade", createTrade)
+		api.POST("/trade/finalize", finalizeTrade)
+		api.POST("/swap", createSwap)
 	}
 
 	// Start server

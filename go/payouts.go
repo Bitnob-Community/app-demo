@@ -67,11 +67,11 @@ func createPayout(c *gin.Context) {
 	}
 
 	payoutReference := uuid.New().String()
-	
+
 	// Get environment variables
 	apiURL := os.Getenv("API_URL")
 	secretKey := os.Getenv("BITNOB_SECRET_KEY")
-	
+
 	if apiURL == "" || secretKey == "" {
 		c.JSON(http.StatusInternalServerError, PayoutResponse{
 			Message:   "Missing API configuration",
@@ -85,7 +85,7 @@ func createPayout(c *gin.Context) {
 		Source:           "offchain",
 		FromAsset:        "usdt",
 		ToCurrency:       "ngn",
-		SettlementAmount: 200000,
+		SettlementAmount: 100000,
 	}
 
 	quoteData, err := makeAPICall(fmt.Sprintf("%s/payouts/quotes", apiURL), secretKey, quoteRequest)
