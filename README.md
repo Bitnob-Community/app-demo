@@ -1,10 +1,43 @@
 # Bitnob API Demo
 
-A comprehensive demonstration of Bitnob's payment API capabilities, showcasing Bitcoin, stablecoins, and financial infrastructure integration.
+A comprehensive demonstration of Bitnob's payment API capabilities, showcasing Bitcoin, stablecoins, and financial infrastructure integration across multiple programming languages.
 
 ## 🚀 About This Demo
 
-This demo application shows how to integrate Bitnob's payment infrastructure into your applications. It features real-world implementations of cryptocurrency payments, virtual card issuing, and cross-border financial services for developers building fintech solutions.
+This demo application shows how to integrate Bitnob's payment infrastructure into your applications across multiple programming languages. It features real-world implementations of cryptocurrency payments, virtual card issuing, and cross-border financial services for developers building fintech solutions.
+
+## 🌟 Multi-Language Implementation
+
+This repository contains complete implementations of Bitnob's API in multiple programming languages, allowing developers to explore integration patterns in their preferred technology stack:
+
+### 🟨 TypeScript/Next.js (`/typescript/labs/`)
+- **Framework**: Next.js 15 with App Router
+- **Features**: Modern React UI, server-side API routes, TailwindCSS styling
+- **Database**: PostgreSQL with Drizzle ORM
+- **Auth**: Built-in authentication patterns
+- **Best For**: Full-stack web applications, modern frontend development
+
+### 🦀 Rust (`/rust/`)  
+- **Framework**: Axum web framework
+- **Features**: High-performance async processing, strong type safety
+- **Architecture**: Clean handler-based structure
+- **Best For**: High-throughput services, systems programming, performance-critical applications
+
+### 🐹 Go (`/go/`)
+- **Framework**: Gin web framework  
+- **Features**: Simple, fast HTTP server with clean API design
+- **Architecture**: Lightweight, minimal setup
+- **Best For**: Microservices, cloud-native applications, simple web APIs
+
+### 🐘 PHP (`/php/`) - *Coming Soon*
+- **Framework**: Laravel/Slim (planned)
+- **Best For**: Traditional web applications, legacy system integration
+
+### 🐍 Python (`/python/`) - *Coming Soon*
+- **Framework**: FastAPI/Django (planned)
+- **Best For**: Data science integration, rapid prototyping, AI/ML applications
+
+Each implementation demonstrates the same core functionality while leveraging language-specific best practices and ecosystem strengths.
 
 ## 🎯 API Features Demonstrated
 
@@ -31,101 +64,21 @@ This demo includes complete implementations of:
 
 ## 🛠️ Getting Started
 
-### Prerequisites
-- **Node.js 18+** - [Download](https://nodejs.org/)
-- **Git** - [Download](https://git-scm.com/downloads) 
-- **Code Editor** - VS Code recommended ([Download](https://code.visualstudio.com/))
-- **Postman** (optional) - [Download](https://www.postman.com/downloads/)
+Choose your preferred programming language implementation:
 
-### 1. Account Setup
+- **[TypeScript/Next.js](typescript/labs/README.md)** - Modern web application with React UI
+- **[Rust](rust/README.md)** - High-performance server implementation  
+- **[Go](go/README.md)** - Simple, fast web API server
 
-1. **Create a Bitnob Sandbox Account**
-   - Go to [https://sandboxapp.bitnob.co/accounts/signup](https://sandboxapp.bitnob.co/accounts/signup)
-   - Complete registration and email verification
-   - Enable 2FA (recommended)
+Each directory contains its own README with specific setup instructions and documentation.
 
-2. **Get API Credentials**
-   - Login to your sandbox account
-   - Navigate to Settings → API Keys
-   - Generate and save your API credentials:
-     - Client ID
-     - Secret Key
+## 🔑 API Setup
 
-### 2. Installation
+Before running any implementation, you'll need Bitnob API credentials:
 
-```bash
-git clone <repository-url>
-cd app-demo/labs
-npm install
-cp .env.example .env
-```
-
-### 3. Environment Configuration
-
-Edit your `.env` file with your API credentials:
-
-```bash
-# Database (for demo data storage)
-DATABASE_URL="postgresql://postgres:password@localhost:5432/bitnob_demo"
-
-# Bitnob API Configuration
-API_URL="https://sandboxapi.bitnob.co/api/v1"
-BITNOB_CLIENT_ID="your_client_id_here"
-BITNOB_SECRET_KEY="your_secret_key_here"
-```
-
-### 4. Start the Application
-
-```bash
-npm run dev
-```
-
-Visit [http://localhost:3000](http://localhost:3000) to access the demo.
-
-### 5. Test Your Setup
-
-You can test your API connection using the test script:
-
-```javascript
-// test-api.js
-const crypto = require('crypto');
-const axios = require('axios');
-
-function generateSignature(method, path, timestamp, nonce, body = '') {
-  const message = `${method}${path}${timestamp}${nonce}${body}`;
-  return crypto
-    .createHmac('sha256', process.env.BITNOB_SECRET_KEY)
-    .update(message)
-    .digest('hex');
-}
-
-async function testConnection() {
-  const timestamp = Date.now().toString();
-  const nonce = crypto.randomBytes(16).toString('hex');
-  const method = 'GET';
-  const path = '/api/v1/me';
-  
-  const signature = generateSignature(method, path, timestamp, nonce);
-  
-  try {
-    const response = await axios.get(`${process.env.API_URL}/me`, {
-      headers: {
-        'x-auth-client': process.env.BITNOB_CLIENT_ID,
-        'x-auth-timestamp': timestamp,
-        'x-auth-nonce': nonce,
-        'x-auth-signature': signature,
-        'Content-Type': 'application/json'
-      }
-    });
-    console.log('✅ Setup successful!');
-    console.log('Account:', response.data.data.email);
-  } catch (error) {
-    console.error('❌ Setup failed:', error.response?.data || error.message);
-  }
-}
-
-testConnection();
-```
+1. **Create a Bitnob Sandbox Account** at [https://sandboxapp.bitnob.co/accounts/signup](https://sandboxapp.bitnob.co/accounts/signup)
+2. **Get API Credentials** from Settings → API Keys in your dashboard
+3. **Configure your chosen implementation** using the README in its directory
 
 ## 📚 API Resources
 
