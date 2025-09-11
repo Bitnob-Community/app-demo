@@ -17,19 +17,19 @@ This repository contains complete implementations of Bitnob's API in multiple pr
 - **Auth**: Built-in authentication patterns
 - **Best For**: Full-stack web applications, modern frontend development
 
-### 🦀 Rust (`/rust/`)  
+### 🦀 Rust (`/rust/`)
 - **Framework**: Axum web framework
 - **Features**: High-performance async processing, strong type safety
 - **Architecture**: Clean handler-based structure
 - **Best For**: High-throughput services, systems programming, performance-critical applications
 
 ### 🐹 Go (`/go/`)
-- **Framework**: Gin web framework  
+- **Framework**: Gin web framework
 - **Features**: Simple, fast HTTP server with clean API design
 - **Architecture**: Lightweight, minimal setup
 - **Best For**: Microservices, cloud-native applications, simple web APIs
 
-### 🐘 PHP (`/php/`) - *Coming Soon*
+### 🐘 PHP (`/php/`)
 - **Framework**: Laravel/Slim (planned)
 - **Best For**: Traditional web applications, legacy system integration
 
@@ -67,7 +67,7 @@ This demo includes complete implementations of:
 Choose your preferred programming language implementation:
 
 - **[TypeScript/Next.js](typescript/labs/README.md)** - Modern web application with React UI
-- **[Rust](rust/README.md)** - High-performance server implementation  
+- **[Rust](rust/README.md)** - High-performance server implementation
 - **[Go](go/README.md)** - Simple, fast web API server
 
 Each directory contains its own README with specific setup instructions and documentation.
