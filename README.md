@@ -30,8 +30,10 @@ This repository contains complete implementations of Bitnob's API in multiple pr
 - **Best For**: Microservices, cloud-native applications, simple web APIs
 
 ### 🐘 PHP (`/php/`)
-- **Framework**: Laravel/Slim (planned)
-- **Best For**: Traditional web applications, legacy system integration
+- **Framework**: Native PHP with cURL
+- **Features**: Simple routing, environment configuration, comprehensive error handling
+- **Architecture**: Lightweight, no external dependencies
+- **Best For**: Traditional web applications, legacy system integration, shared hosting
 
 ### 🐍 Python (`/python/`) - *Coming Soon*
 - **Framework**: FastAPI/Django (planned)
@@ -69,6 +71,7 @@ Choose your preferred programming language implementation:
 - **[TypeScript/Next.js](typescript/labs/README.md)** - Modern web application with React UI
 - **[Rust](rust/README.md)** - High-performance server implementation
 - **[Go](go/README.md)** - Simple, fast web API server
+- **[PHP](php/README.md)** - Native PHP implementation with minimal dependencies
 
 Each directory contains its own README with specific setup instructions and documentation.
 
