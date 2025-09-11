@@ -1,0 +1,19 @@
+{
+    "name": "bitnob/php-demo",
+    "description": "PHP implementation of Bitnob payout API demo",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "files": ["payouts.php"]
+    },
+    "scripts": {
+        "start": "php -S localhost:8080 index.php"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
