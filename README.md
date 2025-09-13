@@ -68,7 +68,7 @@ This demo includes complete implementations of:
 
 Choose your preferred programming language implementation:
 
-- **[TypeScript/Next.js](typescript/labs/README.md)** - Modern web application with React UI
+- **[TypeScript](typescript/labs/README.md)** - Modern web application with React UI
 - **[Rust](rust/README.md)** - High-performance server implementation
 - **[Go](go/README.md)** - Simple, fast web API server
 - **[PHP](php/README.md)** - Native PHP implementation with minimal dependencies
