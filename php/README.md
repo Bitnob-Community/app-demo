@@ -125,10 +125,3 @@ Test the payout functionality by filling out the form on the homepage. The appli
 2. Generate a payout reference
 3. Execute the three-step Bitnob API flow
 4. Display the result with reference ID
-
-## Troubleshooting
-
-- Ensure cURL extension is enabled
-- Check that your API credentials are correct
-- Verify the API_URL is accessible
-- Check PHP error logs for detailed error information
