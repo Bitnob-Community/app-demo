@@ -35,9 +35,11 @@ This repository contains complete implementations of Bitnob's API in multiple pr
 - **Architecture**: Lightweight, no external dependencies
 - **Best For**: Traditional web applications, legacy system integration, shared hosting
 
-### 🐍 Python (`/python/`) - *Coming Soon*
-- **Framework**: FastAPI/Django (planned)
-- **Best For**: Data science integration, rapid prototyping, AI/ML applications
+### 🐍 Python (`/python/`)
+- **Framework**: Flask web framework
+- **Features**: Simple REST API, environment configuration, CORS support
+- **Dependencies**: Minimal setup with Flask, requests, and python-dotenv
+- **Best For**: Data science integration, rapid prototyping, AI/ML applications, microservices
 
 Each implementation demonstrates the same core functionality while leveraging language-specific best practices and ecosystem strengths.
 
@@ -72,6 +74,7 @@ Choose your preferred programming language implementation:
 - **[Rust](rust/README.md)** - High-performance server implementation
 - **[Go](go/README.md)** - Simple, fast web API server
 - **[PHP](php/README.md)** - Native PHP implementation with minimal dependencies
+- **[Python](python/README.md)** - Flask web framework with simple REST API
 
 Each directory contains its own README with specific setup instructions and documentation.
 
